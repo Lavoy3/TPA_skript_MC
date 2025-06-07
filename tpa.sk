@@ -1,5 +1,5 @@
 options:
-    pr: &d&ltpa system &7┃
+    pr: &d&Server name &7┃
 
 # ========== /tpa ==========
 command /tpa [<offline player>]:
