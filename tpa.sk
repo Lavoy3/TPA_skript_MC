@@ -1,5 +1,5 @@
 options:
-    pr: &d&lHilaSMP &7┃
+    pr: &d&ltpa system &7┃
 
 # ========== /tpa ==========
 command /tpa [<offline player>]:
