@@ -25,7 +25,7 @@ Players can request to teleport **to** another player or invite a player to tele
 
 1. **Install Skript** (≥ 2.7) on your Spigot/Paper server.  
 2. Drop `tpa.sk` into `plugins/Skript/scripts/`.  
-3. Run `/skript reload TPA-System` from console or in-game.
+3. Run `/skript reload TPA` from console or in-game.
 
 _No addons required — everything uses native Skript JSON._
 
