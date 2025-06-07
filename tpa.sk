@@ -1,0 +1,114 @@
+options:
+    pr: &d&lHilaSMP &7┃
+
+# ========== /tpa ==========
+command /tpa [<offline player>]:
+    trigger:
+        if arg-1 is not set:
+            send "{@pr} &7Correct Usage:"
+            send "&a/tpa &c<player>"
+            stop
+        if {tp.request.%player%} is set:
+            send "{@pr} &cYou already have a pending teleport request." to player
+            stop
+        if {tp.request.%arg-1%} is set:
+            send "{@pr} &cThat player already has a pending request." to player
+            stop
+        set {tp.request.%arg-1%} to player
+        set {tp.request.%player%} to arg-1
+        set {tp.direction::%player%} to "to"
+        send "{@pr} &b%player% &9has requested to teleport to you. %nl%&a<ttp:&9Click to &aaccept&9><cmd:/tpaaccept>[Accept]<reset> &c<ttp:&9Click to &cdeny&9><cmd:/tpadeny>[Deny]<reset>" to arg-1
+        send "{@pr} &9Teleport request sent to &b%arg-1%."
+        wait 60 seconds
+        if {tp.request.%player%} is set:
+            delete {tp.request.%{tp.request.%player%}%}
+            delete {tp.request.%player%}
+            delete {tp.direction::%player%}
+            send "{@pr} &cYour teleport request to &b%arg-1% &cexpired." to player
+
+# ========== /tpahere ==========
+command /tpahere [<offline player>]:
+    trigger:
+        if arg-1 is not set:
+            send "{@pr} &7Correct Usage:"
+            send "&a/tpahere &c<player>"
+            stop
+        if {tp.request.%player%} is set:
+            send "{@pr} &cYou already have a pending teleport request." to player
+            stop
+        if {tp.request.%arg-1%} is set:
+            send "{@pr} &cThat player already has a pending request." to player
+            stop
+        set {tp.request.%arg-1%} to player
+        set {tp.request.%player%} to arg-1
+        set {tp.direction::%player%} to "here"
+        send "{@pr} &b%player% &9has requested you teleport to them. %nl%&a<ttp:&9Click to &aaccept&9><cmd:/tpaaccept>[Accept]<reset> &c<ttp:&9Click to &cdeny&9><cmd:/tpadeny>[Deny]<reset>" to arg-1
+        send "{@pr} &9Teleport request sent to &b%arg-1%."
+        wait 60 seconds
+        if {tp.request.%player%} is set:
+            delete {tp.request.%{tp.request.%player%}%}
+            delete {tp.request.%player%}
+            delete {tp.direction::%player%}
+            send "{@pr} &cYour teleport request to &b%arg-1% &cexpired." to player
+
+# ========== /tpaaccept ==========
+command /tpaaccept:
+    trigger:
+        if {tp.request.%player%} is not set:
+            send "{@pr} &cYou have no pending teleport requests." to player
+            stop
+        set {_sender} to {tp.request.%player%}
+        set {_direction} to {tp.direction::%{_sender}%}
+        if {_direction} is "to":
+            set {tpa.waiting::%{_sender}%} to location of {_sender}
+        if {_direction} is "here":
+            set {tpa.waiting::%player%} to location of player
+        send "{@pr} &9Teleport request accepted. Teleporting in 5 seconds. Don't move!" to {_sender}
+        send "{@pr} &9Your request was accepted. Teleporting in 5 seconds. Don't move!" to player
+        wait 5 seconds
+        if {_direction} is "to":
+            if {tpa.waiting::%{_sender}%} is set:
+                teleport {_sender} to player
+                delete {tpa.waiting::%{_sender}%}
+        if {_direction} is "here":
+            if {tpa.waiting::%player%} is set:
+                teleport player to {_sender}
+                delete {tpa.waiting::%player%}
+        delete {tp.request.%player%}
+        delete {tp.request.%{_sender}%}
+        delete {tp.direction::%{_sender}%}
+        send "{@pr} &aTeleport complete." to {_sender}
+        send "{@pr} &aTeleport complete." to player
+
+# ========== /tpadeny ==========
+command /tpadeny:
+    trigger:
+        if {tp.request.%player%} is not set:
+            send "{@pr} &cYou have no pending teleport requests." to player
+            stop
+        set {_sender} to {tp.request.%player%}
+        delete {tp.request.%player%}
+        delete {tp.request.%{_sender}%}
+        delete {tp.direction::%{_sender}%}
+        send "{@pr} &cYou denied the teleport request." to player
+        send "{@pr} &cYour teleport request was denied by &b%player%." to {_sender}
+
+# ========== /tpacancel ==========
+command /tpacancel:
+    trigger:
+        if {tp.request.%player%} is not set:
+            send "{@pr} &cYou have no teleport request to cancel." to player
+            stop
+        set {_target} to {tp.request.%player%}
+        delete {tp.request.%player%}
+        delete {tp.request.%{_target}%}
+        delete {tp.direction::%player%}
+        send "{@pr} &aCanceled teleport request to &b%{_target}%."
+        if {_target} is online:
+            send "{@pr} &b%player% &ccanceled their teleport request." to {_target}
+
+# ========== Cancel on movement ==========
+on player move:
+    if {tpa.waiting::%player%} is set:
+        delete {tpa.waiting::%player%}
+        send "{@pr} &cTeleport canceled because you moved." to player
