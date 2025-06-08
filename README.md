@@ -1,4 +1,4 @@
-# TPA System — Skript Edition
+# TPA — Skript Edition
 
 A lightweight **/tpa** system for Minecraft servers running the **Skript** plugin.  
 Players can request to teleport **to** another player or invite a player to teleport **here**, with built-in request expiry, movement-cancel protection, and simple slash commands for accepting, denying, or cancelling a request.
